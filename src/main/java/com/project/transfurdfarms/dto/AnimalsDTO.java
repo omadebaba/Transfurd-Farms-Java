@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
 @Entity
 @Table(name = "Animals")
@@ -30,6 +31,7 @@ public class AnimalsDTO {
 	private String animalType;
 	
 	@Column(name = "Number_Of_Animal")
+	@NotEmpty
 	private long numberOfAnimals;
 	
 	@Column(name = "Age")
