@@ -1,4 +1,4 @@
-package com.project.transfurdfarms.dto;
+ package com.project.transfurdfarms.dto;
 
 import java.util.Date;
 
@@ -92,6 +92,11 @@ public class CropsDTO {
 
 	public void setMaturityAge(int maturityAge) {
 		this.maturityAge = maturityAge;
+	}
+
+	public String getErrorMessage() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }
