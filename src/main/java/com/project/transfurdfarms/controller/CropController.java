@@ -110,5 +110,51 @@ public class CropController {
 		return new ResponseEntity<CropsDTO>(crops, HttpStatus.CREATED);
 	}
 	
+	private String getCropType() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
+	public ResponseEntity<CropsDTO> updateCrops(
+			@PathVariable("id") final Long id, @RequestBody CropsDTO crops){
+		CropsDTO currentCrops = cropsJpaRepository.findCropById(id);
+		if (currentCrops == null) {
+			return new ResponseEntity<CropsDTO>(
+					new CustomErrorType("Unable  to update. Crop with id" + id + "not found."), HttpStatus.NOT_FOUND);
+					
+			
+		}
+		currentCrops.setCropType(crops.getCropType());
+		currentCrops.setFertilizerApplicationDate(crops.getFertilizerApplicationDate());
+		currentCrops.setMaturityAge(crops.getMaturityAge());
+		currentCrops.setPesticideApplicationDate(crops.getPesticideApplicationDate());
+		currentCrops.setPlantingDate(crops.getPlantingDate());
+		currentCrops.setWeedingDate(crops.getWeedingDate());
+		
+		cropsJpaRepository.saveAndFlush(currentCrops);
+		
+		return new ResponseEntity<CropsDTO>(currentCrops, HttpStatus.OK);
+		
+	}
+	
+	@DeleteMapping("/{id}")
+	public ResponseEntity<CropsDTO> deleteCrops1(@PathVariable("id")final Long id){
+		CropsDTO crops = cropsJpaRepository.findCropById(id);
+		if(crops == null) {
+			return new ResponseEntity<CropsDTO>(
+					new CustomErrorType("Unable to delete. User with id" + id + "not found."), HttpStatus.NOT_FOUND);
+		}
+		
+		cropsJpaRepository.deleteById(id);
+		return new ResponseEntity<CropsDTO>(
+				new CustomErrorType("Deleted crop with id" + id + "."), HttpStatus.NO_CONTENT);
+		
+	}
+
+
+	
+	
+	
 
 }
