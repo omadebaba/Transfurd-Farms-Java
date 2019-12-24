@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import com.project.transfurdfarms.Exception.CustomErrorType;
+import com.project.transfurdfarms.Exception.CustomErrorTypeAnimals;
 import com.project.transfurdfarms.dto.AnimalsDTO;
 import com.project.transfurdfarms.jpa.AnimalsJPA;
 
@@ -58,7 +58,7 @@ public class AnimalRestController {
 		//animalsJpaRepository.save(animal);
 		if (animalsJpaRepository.findById(animal.getId())!= null) {
 			logger.error("Unable to create. An Animal with name {} already exist", animal.getAnimalType());
-			return new ResponseEntity<AnimalsDTO>(new CustomErrorType("Unable to create new animal. Animal with type" 
+			return new ResponseEntity<AnimalsDTO>(new CustomErrorTypeAnimals("Unable to create new animal. Animal with type"
 					+ animal.getAnimalType() + "already exist!."), HttpStatus.CONFLICT);
 			
 		}
@@ -69,7 +69,7 @@ public class AnimalRestController {
 	public ResponseEntity<AnimalsDTO> getAnimalById(@PathVariable("id") final long id){
 		AnimalsDTO animal = animalsJpaRepository.findAnimalById(id);
 		if (animal == null) {
-			return new ResponseEntity<AnimalsDTO>(new CustomErrorType("Animal with id" 
+			return new ResponseEntity<AnimalsDTO>(new CustomErrorTypeAnimals("Animal with id"
 					+ id + "not found"), HttpStatus.NOT_FOUND);
 		}
 		return new ResponseEntity<AnimalsDTO>(animal, HttpStatus.OK);
@@ -79,7 +79,7 @@ public class AnimalRestController {
 	public ResponseEntity<AnimalsDTO> updateAnimal(@PathVariable("id") final long id, @RequestBody AnimalsDTO animal){
 		AnimalsDTO currentAnimal = animalsJpaRepository.findAnimalById(id);
 		if(currentAnimal == null) {
-			return new ResponseEntity<AnimalsDTO>(new CustomErrorType("Unable to update. Animal with id" 
+			return new ResponseEntity<AnimalsDTO>(new CustomErrorTypeAnimals("Unable to update. Animal with id"
 					+ id + "not found!"), HttpStatus.NOT_FOUND);
 		}
 		
@@ -100,11 +100,11 @@ public class AnimalRestController {
 	public ResponseEntity<AnimalsDTO> deleteAnimal(@PathVariable("id") final long id) {
 		AnimalsDTO animal = animalsJpaRepository.findAnimalById(id);
 		if(animal == null) {
-			return new ResponseEntity<AnimalsDTO>(new CustomErrorType("Unable to delete. Animal with id" 
+			return new ResponseEntity<AnimalsDTO>(new CustomErrorTypeAnimals("Unable to delete. Animal with id"
 					+ id + "not found!"), HttpStatus.NOT_FOUND);
 		}
 		animalsJpaRepository.deleteById(id);
-		return new ResponseEntity<AnimalsDTO>( new CustomErrorType("Deleted Animal with id" 
+		return new ResponseEntity<AnimalsDTO>( new CustomErrorTypeAnimals("Deleted Animal with id"
 				+ id + "."), HttpStatus.NO_CONTENT);
 	}	
 }

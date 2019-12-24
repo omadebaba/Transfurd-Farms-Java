@@ -12,9 +12,7 @@ import javax.validation.constraints.NotNull;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import org.hibernate.validator.constraints.Length;
-//import org.hibernate.validator.constraints.time.*;
-//import org.hibernate.validator.constraints.date;
-//import org.hibernate.validator.constraints.Currency;
+
 
 
 @Entity

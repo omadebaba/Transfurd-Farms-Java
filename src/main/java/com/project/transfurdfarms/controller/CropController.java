@@ -17,12 +17,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.transfurdfarms.Exception.CustomErrorType;
+import com.project.transfurdfarms.Exception.CustomErrorTypeCrop;
 import com.project.transfurdfarms.dto.CropsDTO;
 import com.project.transfurdfarms.jpa.CropsJpaRepository;
 
 @RestController
-@RequestMapping("/api/Crop")
+@RequestMapping("/api/crops")
 public class CropController {
 	public static final Logger logger =
 			LoggerFactory.getLogger(CropController.class);
@@ -34,64 +34,26 @@ public class CropController {
 		this.cropsJpaRepository = cropsJpaRepository;
 		
 	}
-	
+
 	@GetMapping("/")
 	public ResponseEntity<List<CropsDTO>> listAllCrops(){
-		List<CropsDTO>Crops =cropsJpaRepository.findAll();
-		return new ResponseEntity<List<CropsDTO>>(Crops, HttpStatus.OK);
-		
+		List<CropsDTO> crops = cropsJpaRepository.findAll();
+		if (crops.isEmpty()) {
+			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+		}
+		return new ResponseEntity<>(crops, HttpStatus.OK);
 	}
-	
-	@PostMapping(value="/", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CropsDTO> createCropType(@RequestBody final CropsDTO Crops){
-		cropsJpaRepository.save(Crops);
-		return new ResponseEntity<CropsDTO>(Crops,HttpStatus.CREATED);
-	}
+
+
+
+
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<CropsDTO> getCropById(@PathVariable("id")final Long id){
-		CropsDTO Crops = cropsJpaRepository.findCropById(id);
-		return new ResponseEntity<CropsDTO>(Crops, HttpStatus.OK);
-	}
-	
-	@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CropsDTO> updateUser(
-			@PathVariable("id")final Long id, @RequestBody CropsDTO Crops){
-		CropsDTO currentCrops = cropsJpaRepository.findCropById(id);
-		
-		currentCrops.setCropType(Crops.getCropType());
-		currentCrops.setFertilizerApplicationDate(Crops.getFertilizerApplicationDate());
-		currentCrops.setMaturityAge(Crops.getMaturityAge());
-		currentCrops.setPesticideApplicationDate(Crops.getPesticideApplicationDate());
-		currentCrops.setPlantingDate(Crops.getPlantingDate());
-		currentCrops.setWeedingDate(Crops.getWeedingDate());
-		
-		cropsJpaRepository.saveAndFlush(currentCrops);
-		
-		return new ResponseEntity<CropsDTO>(currentCrops, HttpStatus.OK);
-		
-	}
-	
-	@DeleteMapping("/{id}")
-	public ResponseEntity<CropsDTO> deleteCrops(@PathVariable("id") final Long id){
-		cropsJpaRepository.deleteById(id);
-		return new ResponseEntity<CropsDTO>(HttpStatus.NO_CONTENT);
-	}
-	@GetMapping("/")
-	public ResponseEntity<List<CropsDTO>> listAllCrops1(){
-		List<CropsDTO> crops = cropsJpaRepository.findAll();
-		if (crops.isEmpty()) {
-			return new ResponseEntity<List<CropsDTO>>(HttpStatus.NO_CONTENT);
-		}
-		return new ResponseEntity<List<CropsDTO>>(crops, HttpStatus.OK);
-	}
-	
-	@GetMapping("/{id}")
-	public ResponseEntity<CropsDTO> getCropsById(@PathVariable("id")final Long id){
 		CropsDTO crops = cropsJpaRepository.findCropById(id);
 		if(crops == null) {
 			return new ResponseEntity<CropsDTO>(
-					new CustomErrorType("User with id"
+					new CustomErrorTypeCrop("User with id"
 							+ id + "not found"), HttpStatus.NOT_FOUND);
 					
 		}
@@ -99,29 +61,27 @@ public class CropController {
 	}
 	
 	@PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CropsDTO> createCrops(@RequestBody final CropsDTO crops){
+	public ResponseEntity<CropsDTO> createCrop(@RequestBody final CropsDTO crops){
+
 		if (cropsJpaRepository.findByCropType(crops.getCropType()) != null) {
-			return new ResponseEntity<CropsDTO>(new CustomErrorType(
-					"Unable to create new crop type, A Crop Type" + getCropType()
-					+ "already exist."), HttpStatus.CONFLICT);
+			return new ResponseEntity<CropsDTO>(new CustomErrorTypeCrop(
+					"Unable to create new crop type, A Crop Type " + crops.getCropType()
+					+ " already exist."), HttpStatus.CONFLICT);
 		}
 		
 		cropsJpaRepository.save(crops);
 		return new ResponseEntity<CropsDTO>(crops, HttpStatus.CREATED);
 	}
-	
-	private String getCropType() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
+
 
 	@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-	public ResponseEntity<CropsDTO> updateCrops(
+	public ResponseEntity<CropsDTO> updateCrop(
 			@PathVariable("id") final Long id, @RequestBody CropsDTO crops){
 		CropsDTO currentCrops = cropsJpaRepository.findCropById(id);
 		if (currentCrops == null) {
 			return new ResponseEntity<CropsDTO>(
-					new CustomErrorType("Unable  to update. Crop with id" + id + "not found."), HttpStatus.NOT_FOUND);
+					new CustomErrorTypeCrop("Unable  to update. Crop with id" + id + "not found."), HttpStatus.NOT_FOUND);
 					
 			
 		}
@@ -139,22 +99,18 @@ public class CropController {
 	}
 	
 	@DeleteMapping("/{id}")
-	public ResponseEntity<CropsDTO> deleteCrops1(@PathVariable("id")final Long id){
+	public ResponseEntity<CropsDTO> deleteCrop(@PathVariable("id")final Long id){
 		CropsDTO crops = cropsJpaRepository.findCropById(id);
 		if(crops == null) {
 			return new ResponseEntity<CropsDTO>(
-					new CustomErrorType("Unable to delete. User with id" + id + "not found."), HttpStatus.NOT_FOUND);
+
+					new CustomErrorTypeCrop("Unable to delete. User with id" + id + "not found."), HttpStatus.NOT_FOUND);
 		}
 		
 		cropsJpaRepository.deleteById(id);
-		return new ResponseEntity<CropsDTO>(
-				new CustomErrorType("Deleted crop with id" + id + "."), HttpStatus.NO_CONTENT);
+		return new ResponseEntity<>(
+				new CustomErrorTypeCrop("Deleted crop with id" + id + "."), HttpStatus.NO_CONTENT);
 		
 	}
-
-
-	
-	
-	
 
 }

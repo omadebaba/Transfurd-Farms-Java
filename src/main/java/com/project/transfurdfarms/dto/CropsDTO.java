@@ -94,9 +94,6 @@ public class CropsDTO {
 		this.maturityAge = maturityAge;
 	}
 
-	public String getErrorMessage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+
 
 }
