@@ -8,6 +8,7 @@ import java.util.List;
 
 import javax.validation.Valid;
 
+import com.project.transfurdfarms.serviceImplementation.AnimalDAOServiceImplementation;
 import org.hibernate.type.CustomType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,16 +37,16 @@ import com.project.transfurdfarms.jpa.AnimalsJPA;
 public class AnimalRestController {
 	public static final Logger logger = LoggerFactory.getLogger(AnimalRestController.class);
 	
-	private AnimalsJPA animalsJpaRepository;
+	private AnimalDAOServiceImplementation animalDAOServiceImplementation;
 	
 	@Autowired
-	public void setAnimalsJpaRepository(AnimalsJPA animalsJpaRepository) {
-	this.animalsJpaRepository = animalsJpaRepository;	
+	public void setAnimalsJpaRepository(AnimalDAOServiceImplementation animalDAOServiceImplementation) {
+	this.animalDAOServiceImplementation = animalDAOServiceImplementation;
 	}
 	
 	@GetMapping("/")
 	public ResponseEntity<List<AnimalsDTO>> listAllAnimals() {
-		List<AnimalsDTO> animals = animalsJpaRepository.findAll();
+		List<AnimalsDTO> animals = animalDAOServiceImplementation.findAll();
 		if(animals.isEmpty()) {
 			return new ResponseEntity<List<AnimalsDTO>>(HttpStatus.NO_CONTENT);
 		}
@@ -55,19 +56,20 @@ public class AnimalRestController {
 	@PostMapping(value = "/")
 	public ResponseEntity<AnimalsDTO> createAnimal(@Valid @RequestBody final AnimalsDTO animal) {
 		logger.info("Creating Animal : {}", animal);
-		//animalsJpaRepository.save(animal);
-		if (animalsJpaRepository.findById(animal.getId())!= null) {
+		if (animalDAOServiceImplementation.findAnimalById(animal.getId())!= null) {
 			logger.error("Unable to create. An Animal with name {} already exist", animal.getAnimalType());
 			return new ResponseEntity<AnimalsDTO>(new CustomErrorTypeAnimals("Unable to create new animal. Animal with type"
 					+ animal.getAnimalType() + "already exist!."), HttpStatus.CONFLICT);
 			
 		}
+
+		animalDAOServiceImplementation.saveAnimal(animal);
 		return new ResponseEntity<AnimalsDTO>(animal, HttpStatus.CREATED);
 	}
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<AnimalsDTO> getAnimalById(@PathVariable("id") final long id){
-		AnimalsDTO animal = animalsJpaRepository.findAnimalById(id);
+		AnimalsDTO animal = animalDAOServiceImplementation.findAnimalById(id);
 		if (animal == null) {
 			return new ResponseEntity<AnimalsDTO>(new CustomErrorTypeAnimals("Animal with id"
 					+ id + "not found"), HttpStatus.NOT_FOUND);
@@ -77,7 +79,7 @@ public class AnimalRestController {
 	
 	@PutMapping(value = "/{id}")
 	public ResponseEntity<AnimalsDTO> updateAnimal(@PathVariable("id") final long id, @RequestBody AnimalsDTO animal){
-		AnimalsDTO currentAnimal = animalsJpaRepository.findAnimalById(id);
+		AnimalsDTO currentAnimal = animalDAOServiceImplementation.findAnimalById(id);
 		if(currentAnimal == null) {
 			return new ResponseEntity<AnimalsDTO>(new CustomErrorTypeAnimals("Unable to update. Animal with id"
 					+ id + "not found!"), HttpStatus.NOT_FOUND);
@@ -92,18 +94,18 @@ public class AnimalRestController {
 		animal.setProposedUnitSellingPrice(animal.getProposedUnitSellingPrice());
 		animal.setMortalityRate(animal.getMortalityRate());
 		
-		animalsJpaRepository.saveAndFlush(animal);
+		animalDAOServiceImplementation.saveAndFlushAnimal(animal);
 		return new ResponseEntity<AnimalsDTO>(currentAnimal, HttpStatus.OK);
 	}
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<AnimalsDTO> deleteAnimal(@PathVariable("id") final long id) {
-		AnimalsDTO animal = animalsJpaRepository.findAnimalById(id);
+		AnimalsDTO animal = animalDAOServiceImplementation.findAnimalById(id);
 		if(animal == null) {
 			return new ResponseEntity<AnimalsDTO>(new CustomErrorTypeAnimals("Unable to delete. Animal with id"
 					+ id + "not found!"), HttpStatus.NOT_FOUND);
 		}
-		animalsJpaRepository.deleteById(id);
+		animalDAOServiceImplementation.deleteById(id);
 		return new ResponseEntity<AnimalsDTO>( new CustomErrorTypeAnimals("Deleted Animal with id"
 				+ id + "."), HttpStatus.NO_CONTENT);
 	}	

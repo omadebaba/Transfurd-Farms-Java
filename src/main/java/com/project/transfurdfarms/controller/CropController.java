@@ -2,6 +2,8 @@ package com.project.transfurdfarms.controller;
 
 import java.util.List;
 
+import com.project.transfurdfarms.serviceImplementation.CropsDAOServiceImplementation;
+import com.project.transfurdfarms.services.CropsDAOService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,17 +29,17 @@ public class CropController {
 	public static final Logger logger =
 			LoggerFactory.getLogger(CropController.class);
 	
-	private CropsJpaRepository cropsJpaRepository;
+	private CropsDAOServiceImplementation cropsDAOServiceImplementation;
 	
 	@Autowired
-	public void setCropsRepository(CropsJpaRepository cropsJpaRepository) {
-		this.cropsJpaRepository = cropsJpaRepository;
+	public void setCropsRepository(CropsDAOServiceImplementation cropsDAOServiceImplementation) {
+		this.cropsDAOServiceImplementation = cropsDAOServiceImplementation;
 		
 	}
 
 	@GetMapping("/")
 	public ResponseEntity<List<CropsDTO>> listAllCrops(){
-		List<CropsDTO> crops = cropsJpaRepository.findAll();
+		List<CropsDTO> crops = cropsDAOServiceImplementation.findAll();
 		if (crops.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NO_CONTENT);
 		}
@@ -50,7 +52,7 @@ public class CropController {
 	
 	@GetMapping("/{id}")
 	public ResponseEntity<CropsDTO> getCropById(@PathVariable("id")final Long id){
-		CropsDTO crops = cropsJpaRepository.findCropById(id);
+		CropsDTO crops = cropsDAOServiceImplementation.findCropById(id);
 		if(crops == null) {
 			return new ResponseEntity<CropsDTO>(
 					new CustomErrorTypeCrop("User with id"
@@ -63,13 +65,13 @@ public class CropController {
 	@PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CropsDTO> createCrop(@RequestBody final CropsDTO crops){
 
-		if (cropsJpaRepository.findByCropType(crops.getCropType()) != null) {
+		if (cropsDAOServiceImplementation.findByCropType(crops.getCropType()) != null) {
 			return new ResponseEntity<CropsDTO>(new CustomErrorTypeCrop(
 					"Unable to create new crop type, A Crop Type " + crops.getCropType()
 					+ " already exist."), HttpStatus.CONFLICT);
 		}
 		
-		cropsJpaRepository.save(crops);
+		cropsDAOServiceImplementation.saveCrop(crops);
 		return new ResponseEntity<CropsDTO>(crops, HttpStatus.CREATED);
 	}
 
@@ -78,7 +80,7 @@ public class CropController {
 	@PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<CropsDTO> updateCrop(
 			@PathVariable("id") final Long id, @RequestBody CropsDTO crops){
-		CropsDTO currentCrops = cropsJpaRepository.findCropById(id);
+		CropsDTO currentCrops = cropsDAOServiceImplementation.findCropById(id);
 		if (currentCrops == null) {
 			return new ResponseEntity<CropsDTO>(
 					new CustomErrorTypeCrop("Unable  to update. Crop with id" + id + "not found."), HttpStatus.NOT_FOUND);
@@ -92,7 +94,7 @@ public class CropController {
 		currentCrops.setPlantingDate(crops.getPlantingDate());
 		currentCrops.setWeedingDate(crops.getWeedingDate());
 		
-		cropsJpaRepository.saveAndFlush(currentCrops);
+		cropsDAOServiceImplementation.saveAndFlushCrop(currentCrops);
 		
 		return new ResponseEntity<CropsDTO>(currentCrops, HttpStatus.OK);
 		
@@ -100,14 +102,14 @@ public class CropController {
 	
 	@DeleteMapping("/{id}")
 	public ResponseEntity<CropsDTO> deleteCrop(@PathVariable("id")final Long id){
-		CropsDTO crops = cropsJpaRepository.findCropById(id);
+		CropsDTO crops = cropsDAOServiceImplementation.findCropById(id);
 		if(crops == null) {
 			return new ResponseEntity<CropsDTO>(
 
 					new CustomErrorTypeCrop("Unable to delete. User with id" + id + "not found."), HttpStatus.NOT_FOUND);
 		}
 		
-		cropsJpaRepository.deleteById(id);
+		cropsDAOServiceImplementation.deleteById(id);
 		return new ResponseEntity<>(
 				new CustomErrorTypeCrop("Deleted crop with id" + id + "."), HttpStatus.NO_CONTENT);
 		
