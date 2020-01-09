@@ -1,12 +1,12 @@
 package com.project.transfurdfarms.jpa;
 
-import org.springframework.data.repository.CrudRepository;
+import com.project.transfurdfarms.dto.FarmRegistrationDTO;
+import com.project.transfurdfarms.services.FarmRegistrationService;
+import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.project.transfurdfarms.dto.FarmRegistration;
 
-@Repository("FarmRegistrationJPA")
-public interface FarmRegistrationJPA extends CrudRepository<FarmRegistration, Long> {
-     FarmRegistration findByEmail(String email);
-     FarmRegistration findByConfirmationToken(String confirmationToken);
+@Repository()
+public interface FarmRegistrationJPA extends JpaRepository<FarmRegistrationDTO, Long>, FarmRegistrationService {
+
 }

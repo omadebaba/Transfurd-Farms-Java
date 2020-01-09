@@ -13,12 +13,14 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.Length;
 
+import java.util.Date;
+
 @Entity
 @Table(name = "farmRegistration")
-public class FarmRegistration {
+public class FarmRegistrationDTO {
 
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id")
 	private int id;
 	
@@ -28,31 +30,34 @@ public class FarmRegistration {
 	private String email;
 	
 	@Column(name = "password")
-	@Transient
+	@NotNull
 	private String password;
 	
 	@Column(name = "farm_name")
 	@NotEmpty(message = "Please provide your farm name")
 	private String farmName;
 	
-	@NotNull(message = "error.address.empty")
-	@Length(max = 150, message = "error.address.length")
-	@Column(name = "ADDRESS")
+	@Column(name = "address")
 	private String address;
 	
 	@Column(name = "enabled")
-	private boolean enabled;
-	
-	@Column(name = "confirmation_token")
-	private String confirmationToken;
+	private boolean isEnabled;
 
-	public String getConfirmationToken() {
-		return confirmationToken;
+
+	public Date getRegistrationDate() {
+		return registrationDate;
 	}
 
-	public void setConfirmationToken(String confirmationToken) {
-		this.confirmationToken = confirmationToken;
+	public void setRegistrationDate(Date registrationDate) {
+		this.registrationDate = registrationDate;
 	}
+
+	@Column(name = "reg_date")
+	private Date registrationDate;
+
+
+	@Column(name = "role")
+	private String roles;
 
 	public int getId() {
 		return id;
@@ -60,6 +65,14 @@ public class FarmRegistration {
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
 	}
 
 	public String getPassword() {
@@ -74,24 +87,31 @@ public class FarmRegistration {
 		return farmName;
 	}
 
-	public void setFirstName(String farmName) {
+	public void setFarmName(String farmName) {
 		this.farmName = farmName;
 	}
 
-	
-	public String getEmail() {
-		return email;
+	public String getAddress() {
+		return address;
 	}
 
-	public void setEmail(String email) {
-		this.email = email;
+	public void setAddress(String address) {
+		this.address = address;
 	}
 
-	public boolean getEnabled() {
-		return enabled;
+	public boolean isEnabled() {
+		return isEnabled;
 	}
 
-	public void setEnabled(boolean value) {
-		this.enabled = value;
+	public void setEnabled(boolean enabled) {
+		isEnabled = enabled;
+	}
+
+	public String getRoles() {
+		return roles;
+	}
+
+	public void setRoles(String roles) {
+		this.roles = roles;
 	}
 }
